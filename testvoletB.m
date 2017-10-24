@@ -62,11 +62,13 @@ plot(x(:,1),x(:,2));
 %% Throw many particles
 xxf = xx; %zeros(size(xx));
 yyf = yy; %zeros(size(xx));
-deltaT_plot = 5;
+deltaT_plot = 2;
 current_tspan = [tspan(1) deltaT_plot];
 
 figure
+[xxplot, yyplot] = meshgrid(-5:dx:5,-5:dy:5);
 while current_tspan(end)<tspan(end)
+    %% Convect particles
     current_tspan = current_tspan + deltaT_plot;
     for i=1:size(xx,1)
         i/size(xx,1)*100
@@ -77,21 +79,24 @@ while current_tspan(end)<tspan(end)
             yyf(i,j) = x(end,2);
         end
     end
+    
+    %% Density
     figure(30)
-    density = zeros(size(xx));
+    density = zeros(size(xxplot));
     nTotalParticles = numel(xx);
-    for i=1:size(xx,1)
-        for j=1:size(xx,2)
-            tempDistance = (xxf-xx(i,j)).^2 + (yyf-yy(i,j)).^2 - (dx^2 + dy^2);
+    for i=1:size(xxplot,1)
+        for j=1:size(xxplot,2)
+            tempDistance = (xxf-xxplot(i,j)).^2 + (yyf-yyplot(i,j)).^2 - (dx^2 + dy^2);
             temp2 = tempDistance<0;
             density(i,j) = sum(sum(temp2))/nTotalParticles;
         end
     end
     % surf(xx,yy,density);
-    contourf(xx,yy,density);
+    contourf(xxplot,yyplot,density);
     axis square
     caxis([0 1e-3])
     colorbar
+    shading flat
     drawnow
 end
 
